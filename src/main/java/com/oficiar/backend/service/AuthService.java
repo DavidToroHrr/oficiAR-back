@@ -32,6 +32,7 @@ public class AuthService {
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(request.getRole());
         userRepository.save(user);
 
         java.util.Map<String, String> response = new java.util.HashMap<>();
@@ -52,9 +53,9 @@ public class AuthService {
         }
 
         // 2. Guardamos el token en una variable temporal
-        String tokenGenerado = jwtUtil.generateToken(user.getEmail());
+        String tokenGenerado = jwtUtil.generateToken(user.getEmail(), user.getRole());
 
         // 3. Empaquetamos el token y el nombre en el DTO y lo enviamos con un status 200 (OK)
-        return ResponseEntity.ok(new LoginOutDTO(tokenGenerado, user.getName(), user.getEmail()));
+        return ResponseEntity.ok(new LoginOutDTO(tokenGenerado, user.getName(), user.getEmail(), user.getRole()));
     }
 }

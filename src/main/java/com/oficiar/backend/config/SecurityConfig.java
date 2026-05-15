@@ -25,10 +25,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/error").permitAll()
+                        .requestMatchers("/api/trabajador/**").hasRole("WORKER") // Solo para trabajadores
+                        .requestMatchers("/api/cliente/**").hasRole("CLIENT")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-                
-
 
         return http.build();
     }

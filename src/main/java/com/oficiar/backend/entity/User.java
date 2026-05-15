@@ -16,6 +16,9 @@ public class User {
     @Column(nullable = false, length = 100)
     private String name;
 
+    @Column(unique = true, length = 50)
+    private String username;
+
     @NotBlank
     @Email
     @Size(max = 100)
@@ -26,14 +29,19 @@ public class User {
     @Column(nullable = false)
     private String password; //lo almacenamos como hash
 
+    @Column(nullable = false, length = 20)
+    private String role;
+
     public User() {
     }
 
-    public User(Long id, String name, String email, String password) {
+    public User(Long id, String name, String username, String email, String password, String role) {
         this.id = id;
         this.name = name;
+        this.username = username;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     public Long getId() {
@@ -67,4 +75,10 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
+
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
 }
