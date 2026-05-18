@@ -8,6 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -22,19 +23,24 @@ public class DataLoader {
     }
 
     @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(); // Le decimos que use el estándar de BCrypt
+    }
+
+    @Bean
     CommandLineRunner initDatabase(
             UserRepository userRepository,
-            RestTemplate restTemplate
+            RestTemplate restTemplate,
+            PasswordEncoder passwordEncoder
     ) {
         return args -> {
             // 1. Insertar admin default solo si no existe
-            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             if (!userRepository.existsByEmail("admin@exodus.com")) {
                 User admin = new User();
                 admin.setName("Administrador");
                 admin.setEmail("admin@exodus.com");
-                admin.setPassword("admin123");
-                admin.setRole("ADMIN");
+                admin.setPassword(passwordEncoder.encode("admin123"));
+                admin.setRole("CLIENT");
                 userRepository.save(admin);
                 System.out.println("Usuario administrador por defecto creado.");
             }
@@ -56,7 +62,7 @@ public class DataLoader {
                         // Como la API no trae passwords, les asignamos una genérica
                         // El nombre de usuario en minúsculas + "123"
                         String username = (String) userData.get("username");
-                        user.setPassword(username + "123");
+                        user.setPassword(passwordEncoder.encode(username + "123"));
 
                         userRepository.save(user);
                     }
